@@ -15,6 +15,10 @@ CREATE TABLE utilisateurs (
     role ENUM('client', 'coach', 'admin') NOT NULL
 );
 
+INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, role) VALUES
+('Yang', 'Alexandre', 'alexandre.yang@sportify.com', '123', 'admin'),
+('Mignot', 'Constant', 'constant.mignot@sportify.com', '123', 'admin');
+
 -- Table des clients
 CREATE TABLE clients (
     -- relier à la table "principal utilisateur"
@@ -32,9 +36,12 @@ CREATE TABLE admins (
     FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE
 );
 
+INSERT INTO admins (id_utilisateur) VALUES
+(1),
+(2);
+
 -- Table des coachs
 CREATE TABLE coachs (
-    -- pour la table 
     id INT AUTO_INCREMENT PRIMARY KEY,
     -- relier à la table "principal utilisateur"
     id_utilisateur INT NOT NULL UNIQUE,
