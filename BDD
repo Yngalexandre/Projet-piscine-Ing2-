@@ -1,0 +1,104 @@
+-- Supprimer l’ancienne base si elle existe
+DROP DATABASE IF EXISTS sportify;
+
+-- Créer la base
+CREATE DATABASE sportify;
+USE sportify;
+
+-- Table principale des utilisateurs
+CREATE TABLE utilisateurs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    mot_de_passe VARCHAR(255) NOT NULL,
+    role ENUM('client', 'coach', 'admin') NOT NULL
+);
+
+-- Table des clients
+CREATE TABLE clients (
+    -- relier à la table "principal utilisateur"
+    id_utilisateur INT PRIMARY KEY,
+    adresse TEXT,
+    carte_etudiant VARCHAR(50),
+    telephone VARCHAR(20),
+    FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE
+);
+
+-- Table des administrateurs 
+CREATE TABLE admins (
+    -- relier à la table "principal utilisateur"
+    id_utilisateur INT PRIMARY KEY,
+    FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE
+);
+
+-- Table des coachs
+CREATE TABLE coachs (
+    -- pour la table 
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    -- relier à la table "principal utilisateur"
+    id_utilisateur INT NOT NULL UNIQUE,
+    specialite VARCHAR(100),
+    photo VARCHAR(255),
+    video_url VARCHAR(255),
+    bureau VARCHAR(100),
+    cv TEXT,
+    email_chat VARCHAR(150),
+    FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE
+);
+
+-- Table des disponibilités des coachs
+CREATE TABLE disponibilites (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_coach INT NOT NULL,
+    jour_semaine ENUM('Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche') NOT NULL,
+    heure_debut TIME NOT NULL,
+    heure_fin TIME NOT NULL,
+    disponible BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (id_coach) REFERENCES coachs(id) ON DELETE CASCADE
+);
+
+-- Table des rendez-vous
+CREATE TABLE rendezvous (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_client INT NOT NULL,
+    id_coach INT NOT NULL,
+    date_rdv DATE NOT NULL,
+    heure_rdv TIME NOT NULL,
+    statut ENUM('confirmé', 'annulé') DEFAULT 'confirmé',
+    FOREIGN KEY (id_client) REFERENCES utilisateurs(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_coach) REFERENCES coachs(id) ON DELETE CASCADE
+);
+
+-- Table des messages (texte, audio, vidéo, email)
+CREATE TABLE messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    expediteur_id INT NOT NULL,
+    destinataire_id INT NOT NULL,
+    contenu TEXT,
+    type_message ENUM('texte', 'audio', 'video', 'email') DEFAULT 'texte',
+    date_envoi DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (expediteur_id) REFERENCES utilisateurs(id),
+    FOREIGN KEY (destinataire_id) REFERENCES utilisateurs(id)
+);
+
+-- Table des paiements
+CREATE TABLE paiements (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_client INT NOT NULL,
+    type_carte ENUM('Visa', 'MasterCard', 'American Express', 'PayPal'),
+    numero_carte VARCHAR(20),
+    nom_carte VARCHAR(100),
+    date_expiration DATE,
+    code_securite VARCHAR(5),
+    date_paiement DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_client) REFERENCES clients(id_utilisateur) ON DELETE CASCADE
+);
+
+-- Table pour les fichiers XML des CV des coachs
+CREATE TABLE cv_xml (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_coach INT NOT NULL,
+    chemin_fichier VARCHAR(255),
+    FOREIGN KEY (id_coach) REFERENCES coachs(id) ON DELETE CASCADE
+);
