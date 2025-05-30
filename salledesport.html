@@ -6,47 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
   <link rel="stylesheet" href="styleaccueil.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <style>
     .services-menu {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 16px;
-      margin: 20px 0;
-    }
-
-    .services-menu button {
-      padding: 12px 24px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .services-menu button:hover {
-      background-color: #0056b3;
-    }
-
-    .service-content {
-      display: none;
-      margin-top: 20px;
-      padding: 20px;
-      border: 1px solid #ccc;
-      background: #f9f9f9;
-    }
-
-    .service-content.active {
-      display: block;
-    }
-
-    .service-content h3 {
-      margin-top: 0;
+      gap: 12px;
     }
   </style>
 </head>
-
 <body>
   <div class="wrapper">
 
@@ -61,9 +29,6 @@
 
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-md">
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
       <div class="collapse navbar-collapse" id="main-navigation">
         <ul class="navbar-nav mx-auto">
           <li class="nav-item"><a class="nav-link" href="accueil.html">Accueil</a></li>
@@ -76,40 +41,16 @@
     </nav>
 
     <!-- SECTION -->
-    <section class="section">
-      <h2 style="text-align:center;">Nos Services</h2>
-      <div class="services-menu">
-        <button data-target="#personnel">Personnels</button>
-        <button data-target="#horaire">Horaire de la gym</button>
-        <button data-target="#regles">Règles</button>
-        <button data-target="#nouveaux">Nouveaux clients</button>
-        <button data-target="#nutrition">Alimentation & Nutrition</button>
-      </div>
+    <section class="section text-center">
+      <h2 class="mt-4">Salle de Sport – Nos Services</h2>
+      <p class="intro-text">Choisissez un service pour découvrir nos coachs, horaires, règles et plus.</p>
 
-      <!-- CONTENU -->
-      <div id="personnel" class="service-content">
-        <h3>Personnels de la salle</h3>
-        <p>Liste des coachs responsables :<br>- Coach Laura (Fitness)<br>- Coach Mehdi (Musculation)<br>- Coach Sara (Cardio)</p>
-      </div>
-
-      <div id="horaire" class="service-content">
-        <h3>Horaire de la gym</h3>
-        <p>Lundi à Vendredi : 7h - 22h<br>Samedi : 9h - 18h<br>Dimanche : Fermé</p>
-      </div>
-
-      <div id="regles" class="service-content">
-        <h3>Règles d'utilisation</h3>
-        <p>- Essuyer les machines après usage<br>- Chaussures de sport obligatoires<br>- Respecter les temps d'utilisation</p>
-      </div>
-
-      <div id="nouveaux" class="service-content">
-        <h3>Bienvenue aux nouveaux</h3>
-        <p>Veuillez remplir le formulaire d'inscription à l'accueil ou sur votre compte en ligne pour accéder aux installations.</p>
-      </div>
-
-      <div id="nutrition" class="service-content">
-        <h3>Alimentation & Nutrition</h3>
-        <p>Conseils diététiques personnalisés disponibles sur rendez-vous avec notre nutritionniste.</p>
+      <div class="services-menu mt-4">
+        <a href="personnels.html"><button class="btn btn-primary m-2">Personnels</button></a>
+        <a href="horaire.html"><button class="btn btn-primary m-2">Horaire</button></a>
+        <a href="regles.html"><button class="btn btn-primary m-2">Règles</button></a>
+        <a href="nouveaux.html"><button class="btn btn-primary m-2">Nouveaux</button></a>
+        <a href="nutrition.html"><button class="btn btn-primary m-2">Nutrition</button></a>
       </div>
     </section>
 
@@ -118,34 +59,17 @@
       <div class="footer-content">
         <div class="contact-info">
           <h4>Contactez-nous</h4>
-          <p>
-            Sportify<br>
-            10 rue Sextius-Michel, 75015 Paris<br>
-            <a href="mailto:info@sportify.fr">info@sportify.fr</a><br>
-            +33 1 23 45 67 89
-          </p>
+          <p>Sportify<br>10 rue Sextius-Michel, 75015 Paris<br>
+            <a href="mailto:info@sportify.fr">info@sportify.fr</a><br>+33 1 23 45 67 89</p>
         </div>
         <div class="map">
           <h4>Notre emplacement</h4>
-          <iframe
-            src="https://www.google.com/maps?q=10+rue+Sextius-Michel+75015+Paris&output=embed"
-            width="100%" height="200" frameborder="0" style="border:0;"
-            allowfullscreen>
-          </iframe>
+          <iframe src="https://www.google.com/maps?q=10+rue+Sextius-Michel+75015+Paris&output=embed"
+                  width="100%" height="200" frameborder="0" style="border:0;" allowfullscreen></iframe>
         </div>
       </div>
     </footer>
-  </div>
 
-  <!-- Script jQuery pour gérer les clics -->
-  <script>
-    $(document).ready(function() {
-      $('.services-menu button').click(function() {
-        var target = $(this).data('target');
-        $('.service-content').removeClass('active');
-        $(target).addClass('active');
-      });
-    });
-  </script>
+  </div>
 </body>
 </html>
