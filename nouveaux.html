@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Sportify – Nouveaux Clients</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styleaccueil.css">
+  <style>
+    .active-service { background-color: #004080 !important; color: white !important; }
+    .nouveaux-section {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      margin-top: 40px;
+      gap: 30px;
+    }
+    .nouveaux-text {
+      flex: 1 1 400px;
+      text-align: left;
+    }
+    .nouveaux-text h3 {
+      color: #007bff;
+      margin-bottom: 15px;
+    }
+    .nouveaux-text p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    .nouveaux-img {
+      flex: 1 1 300px;
+      max-width: 400px;
+    }
+    .nouveaux-img img {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <header class="header">
+      <h1 class="header-title">
+        <span class="red">Sportify :</span>
+        <span class="blue">Consultation Sportive</span>
+      </h1>
+      <img src="img/sportify_logo.png" alt="Logo Sportify" class="logo">
+    </header>
+
+    <nav class="navbar navbar-expand-md">
+      <div class="collapse navbar-collapse" id="main-navigation">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="accueil.html">Accueil</a></li>
+          <li class="nav-item"><a class="nav-link" href="toutparcourir.html">Tout Parcourir</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Recherche</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Rendez-vous</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Votre Compte</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <section class="section text-center">
+      <h2 class="mt-4">Nos Services</h2>
+      <div class="services-menu mt-3">
+        <a href="personnels.html"><button class="btn btn-primary m-2">Personnels</button></a>
+        <a href="horaire.html"><button class="btn btn-primary m-2">Horaire</button></a>
+        <a href="regles.html"><button class="btn btn-primary m-2">Règles</button></a>
+        <a href="nouveaux.html"><button class="btn btn-primary m-2 active-service">Nouveaux</button></a>
+        <a href="nutrition.html"><button class="btn btn-primary m-2">Nutrition</button></a>
+      </div>
+
+      <!-- Nouveaux Clients Content -->
+      <div class="nouveaux-section container">
+        <div class="nouveaux-text">
+          <h3>Bienvenue chez Sportify 👋</h3>
+          <p>
+            Vous êtes nouveau ? Rejoignez notre communauté dès aujourd’hui !
+          </p>
+          <ul>
+            <li>📝 Inscription en ligne ou directement à l'accueil</li>
+            <li>🎁 Une séance découverte offerte pour tout nouveau membre</li>
+            <li>👨‍🏫 Un coach vous accueille et vous accompagne dans vos premiers pas</li>
+          </ul>
+          <p>
+            Que vous soyez débutant ou expérimenté, notre équipe est là pour vous guider et vous motiver.
+          </p>
+        </div>
+        <div class="nouveaux-img">
+          <img src="img/nouveaux.jpg" alt="Nouveaux clients Sportify">
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="contact-info">
+          <h4>Contactez-nous</h4>
+          <p>Sportify<br>10 rue Sextius-Michel, 75015 Paris<br>
+            <a href="mailto:info@sportify.fr">info@sportify.fr</a><br>+33 1 23 45 67 89</p>
+        </div>
+        <div class="map">
+          <h4>Notre emplacement</h4>
+          <iframe src="https://www.google.com/maps?q=10+rue+Sextius-Michel+75015+Paris&output=embed"
+            width="100%" height="200" frameborder="0" style="border:0;" allowfullscreen></iframe>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
