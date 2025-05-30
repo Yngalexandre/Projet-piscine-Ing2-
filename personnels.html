@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Sportify – Nos Coachs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styleaccueil.css">
+  <style>
+    .active-service {
+      background-color: #004080 !important;
+      color: white !important;
+    }
+    .coach-card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      padding: 25px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .coach-card:hover {
+      transform: translateY(-5px);
+    }
+    .coach-img {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .coach-name {
+      margin-top: 15px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #004080;
+    }
+    .coach-speciality {
+      font-size: 1.1rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <header class="header">
+      <h1 class="header-title">
+        <span class="red">Sportify :</span>
+        <span class="blue">Consultation Sportive</span>
+      </h1>
+      <img src="img/sportify_logo.png" alt="Logo Sportify" class="logo">
+    </header>
+
+    <nav class="navbar navbar-expand-md">
+      <div class="collapse navbar-collapse" id="main-navigation">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="accueil.html">Accueil</a></li>
+          <li class="nav-item"><a class="nav-link" href="toutparcourir.html">Tout Parcourir</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Recherche</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Rendez-vous</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Votre Compte</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <section class="section text-center">
+      <h2 class="mt-4">Nos Services</h2>
+      <div class="services-menu mt-3">
+        <a href="personnels.html"><button class="btn btn-primary m-2 active-service">Personnels</button></a>
+        <a href="horaire.html"><button class="btn btn-primary m-2">Horaire</button></a>
+        <a href="regles.html"><button class="btn btn-primary m-2">Règles</button></a>
+        <a href="nouveaux.html"><button class="btn btn-primary m-2">Nouveaux</button></a>
+        <a href="nutrition.html"><button class="btn btn-primary m-2">Nutrition</button></a>
+      </div>
+
+      <div class="container mt-5">
+        <h3 class="mb-4">Rencontrez nos coachs experts 💪</h3>
+        <div class="row">
+          <div class="col-md-4 mb-4">
+            <div class="coach-card">
+              <img src="img/coach1.jpg" alt="Coach Laura" class="coach-img">
+              <div class="coach-name">Coach Laura</div>
+              <div class="coach-speciality">Fitness & Bien-être</div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4">
+            <div class="coach-card">
+              <img src="img/coach2.jpg" alt="Coach Mehdi" class="coach-img">
+              <div class="coach-name">Coach Mehdi</div>
+              <div class="coach-speciality">Musculation & CrossFit</div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4">
+            <div class="coach-card">
+              <img src="img/coach3.jpg" alt="Coach Sara" class="coach-img">
+              <div class="coach-name">Coach Sara</div>
+              <div class="coach-speciality">Cardio & Zumba</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="contact-info">
+          <h4>Contactez-nous</h4>
+          <p>Sportify<br>10 rue Sextius-Michel, 75015 Paris<br>
+            <a href="mailto:info@sportify.fr">info@sportify.fr</a><br>+33 1 23 45 67 89</p>
+        </div>
+        <div class="map">
+          <h4>Notre emplacement</h4>
+          <iframe src="https://www.google.com/maps?q=10+rue+Sextius-Michel+75015+Paris&output=embed"
+            width="100%" height="200" frameborder="0" style="border:0;" allowfullscreen></iframe>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
