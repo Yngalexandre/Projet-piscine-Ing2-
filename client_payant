@@ -1,0 +1,219 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['id'])) {
+    header("Location: ../connexion.php");
+    exit();
+}
+
+$conn = mysqli_connect('localhost', 'root', '', 'sportify');
+if (!$conn) {
+    die("Erreur de connexion à la base de données");
+}
+
+$id_client = $_SESSION['id'];
+$message = null;
+
+// Traitement de l'enregistrement
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['enregistrer'])) {
+    $type = $_POST['type'];
+    $numero = $_POST['numero'];
+    $nom = $_POST['nom'];
+    $expiration = $_POST['expiration'];
+    $code = $_POST['code'];
+
+    // Vérifier si une carte est déjà enregistrée
+    $stmt = mysqli_prepare($conn, "SELECT id FROM paiements WHERE id_client = ?");
+    mysqli_stmt_bind_param($stmt, 'i', $id_client);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_store_result($stmt);
+    if (mysqli_stmt_num_rows($stmt) > 0) {
+        $message = ['type' => 'warning', 'texte' => 'Une carte est déjà enregistrée.'];
+    } else {
+        mysqli_stmt_close($stmt);
+        $stmt = mysqli_prepare($conn, "
+            INSERT INTO paiements (id_client, type_carte, numero_carte, nom_carte, date_expiration, code_securite) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        ");
+        mysqli_stmt_bind_param($stmt, 'isssss', $id_client, $type, $numero, $nom, $expiration, $code);
+        mysqli_stmt_execute($stmt);
+        $message = ['type' => 'success', 'texte' => 'Carte enregistrée avec succès.'];
+    }
+    mysqli_stmt_close($stmt);
+}
+
+// Traitement du paiement
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['payer'])) {
+    $type = $_POST['type'];
+    $numero = $_POST['numero'];
+    $nom = $_POST['nom'];
+    $expiration = $_POST['expiration'];
+    $code = $_POST['code'];
+
+    $stmt = mysqli_prepare($conn, "
+        SELECT id FROM paiements 
+        WHERE id_client = ? AND type_carte = ? AND numero_carte = ? AND nom_carte = ? AND date_expiration = ? AND code_securite = ?
+    ");
+    mysqli_stmt_bind_param($stmt, 'isssss', $id_client, $type, $numero, $nom, $expiration, $code);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_store_result($stmt);
+
+    if (mysqli_stmt_num_rows($stmt) === 1) {
+        $message = ['type' => 'success', 'texte' => 'Paiement accepté. Merci !'];
+    } else {
+        $message = ['type' => 'danger', 'texte' => 'Paiement refusé. Informations incorrectes.'];
+    }
+    mysqli_stmt_close($stmt);
+}
+
+mysqli_close($conn);
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Payant – Sportify</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../styleaccueil.css">
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header class="header">
+    <h1 class="header-title">
+      <span class="red">Sportify :</span>
+      <span class="blue">Vos Rendez-vous</span>
+    </h1>
+    <img src="../img/sportify_logo.png" alt="Logo Sportify" class="logo">
+  </header>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-md">
+    <div class="collapse navbar-collapse" id="main-navigation">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item"><a class="nav-link" href="client_home.php">Accueil</a></li>
+        <li class="nav-item"><a class="nav-link" href="toutparcourirclient/client_toutparcourir.html">Tout Parcourir</a></li>
+        <li class="nav-item"><a class="nav-link" href="client_recherche.php">Recherche</a></li>
+        <li class="nav-item"><a class="nav-link" href="client_payant.php">Options payantes</a></li>
+        <li class="nav-item"><a class="nav-link" href="client_rendezvous.php">Rendez-vous</a></li>
+        <li class="nav-item"><a class="nav-link" href="client_votrecompte.php">Votre Compte</a></li>
+      </ul>
+    </div>
+  </nav>
+
+<body>
+    <div class="container">
+        <br>
+        <h2 class="text-center mb-4">Option payante – Abonnement mensuel</h2>
+
+        <?php if ($message): ?>
+            <div class="alert alert-<?= $message['type'] ?>"><?= $message['texte'] ?></div>
+        <?php endif; ?>
+
+        <div class="text-center mb-4">
+            <p>Abonnez-vous pour seulement 29.99€/mois et bénéficiez de services premium !</p>
+        </div>
+
+        <div class="row">
+            <!-- Formulaire Enregistrement -->
+            <div class="col-md-6">
+                <h4>1. Enregistrer votre carte</h4>
+                <form method="POST">
+                    <input type="hidden" name="enregistrer" value="1">
+                    <div class="form-group">
+                        <label>Type de carte</label>
+                        <select name="type" class="form-control" required>
+                            <option>Visa</option>
+                            <option>MasterCard</option>
+                            <option>American Express</option>
+                            <option>PayPal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Numéro de la carte</label>
+                        <input type="text" name="numero" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nom sur la carte</label>
+                        <input type="text" name="nom" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date d'expiration</label>
+                        <input type="date" name="expiration" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Code de sécurité</label>
+                        <input type="text" name="code" maxlength="4" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </form>
+            </div>
+
+            <!-- Formulaire Paiement -->
+            <div class="col-md-6">
+                <h4>2. Payer maintenant</h4>
+                <form method="POST">
+                    <input type="hidden" name="payer" value="1">
+                    <div class="form-group">
+                        <label>Type de carte</label>
+                        <select name="type" class="form-control" required>
+                            <option>Visa</option>
+                            <option>MasterCard</option>
+                            <option>American Express</option>
+                            <option>PayPal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Numéro de la carte</label>
+                        <input type="text" name="numero" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nom sur la carte</label>
+                        <input type="text" name="nom" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date d'expiration</label>
+                        <input type="date" name="expiration" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Code de sécurité</label>
+                        <input type="text" name="code" maxlength="4" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Payer</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="client_home.php" class="btn btn-secondary">Retour</a>
+        </div>
+    </div>
+</section>
+
+ <footer class="footer mt-5" style="border-top: 2px solid grey;">
+  <div class="footer-content">
+    <div class="contact-info">
+      <h4>Contactez-nous</h4>
+      <p>
+        Sportify<br>
+        10 rue Sextius-Michel, 75015 Paris<br>
+        <a href="mailto:info@sportify.fr">info@sportify.fr</a><br>
+        +33 1 23 45 67 89
+      </p>
+    </div>
+    <div class="map">
+      <h4>Notre emplacement</h4>
+      <iframe 
+        src="https://www.google.com/maps?q=10+rue+Sextius-Michel+75015+Paris&output=embed" 
+        width="100%" height="200" frameborder="0" style="border:0;" allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+</footer>
+
+
+</div>
+</body>
+</html>
