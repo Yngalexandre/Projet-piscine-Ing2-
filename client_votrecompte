@@ -1,0 +1,114 @@
+<?php
+session_start();
+
+// Gestion de la déconnexion si le formulaire a été soumis
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
+    session_unset();
+    session_destroy();
+    header('Location: ../accueil.html');
+    exit;
+}
+
+// Vérifier qu’on est bien connecté en tant qu’admin
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'client') {
+    header('Location: ../connexion.html');
+    exit;
+}
+
+// Récupérer les infos de l’administrateur depuis la session
+$nom    = $_SESSION['nom'];
+$prenom = $_SESSION['prenom'];
+$email  = $_SESSION['email'];
+?>
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sportify – Votre Compte Admin</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="wrapper">
+
+    <!-- HEADER -->
+    <header class="header">
+      <h1 class="header-title">
+        <span class="red">Sportify :</span>
+        <span class="blue">Consultation Sportive</span>
+      </h1>
+      <img src="../img/sportify_logo.png" alt="Logo Sportify" class="logo">
+    </header>
+
+    <!-- NAVBAR : liens dédiés au client -->
+    <nav class="navbar navbar-expand-md">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="main-navigation">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item"><a class="nav-link" href="client_home.php">Accueil</a></li>
+        <li class="nav-item"><a class="nav-link" href="toutparcourirclient/client_toutparcourir.html">Tout Parcourir</a></li>
+        <li class="nav-item"><a class="nav-link" href="client_recherche.php">Recherche</a></li>
+        <li class="nav-item"><a class="nav-link" href="client_payant.php">Options payantes</a></li>
+        <li class="nav-item"><a class="nav-link" href="client_rendezvous.php">Rendez-vous</a></li>
+        <li class="nav-item"><a class="nav-link" href="client_votrecompte.php">Votre Compte</a></li>
+      </ul>
+    </div>
+    </nav>
+
+    <!-- SECTION Votre Compte -->
+    <section class="section">
+      <h2>Mon compte Client</h2>
+      <table class="table table-bordered w-50">
+        <tr>
+          <th>Nom</th>
+          <td><?= htmlspecialchars($nom) ?></td>
+        </tr>
+        <tr>
+          <th>Prénom</th>
+          <td><?= htmlspecialchars($prenom) ?></td>
+        </tr>
+        <tr>
+          <th>Courriel</th>
+          <td><?= htmlspecialchars($email) ?></td>
+        </tr>
+      </table>
+
+<br>
+      <!-- Bouton Déconnexion intégré -->
+      <form method="post">
+        <button type="submit" name="logout">Se déconnecter</button>
+      </form>
+    </section>
+
+          <!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="contact-info">
+      <h4>Contactez-nous</h4>
+      <p>
+        Sportify<br>
+        10 rue Sextius-Michel, 75015 Paris<br>
+        <a href="mailto:info@sportify.fr">info@sportify.fr</a><br>
+        +33 1 23 45 67 89
+      </p>
+    </div>
+    <div class="map">
+      <h4>Notre emplacement</h4>
+      <iframe
+        src="https://www.google.com/maps?q=10+rue+Sextius-Michel+75015+Paris&output=embed"
+        width="100%" height="200" frameborder="0" style="border:0;"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+</footer>
+
+  </div>
+</body>
+</html>
