@@ -1,0 +1,211 @@
+<?php
+session_start();
+
+// Vérifier que le client est connecté
+if (!isset($_SESSION['id'])) {
+    header("Location: ../connexion.php");
+    exit();
+}
+
+$conn = mysqli_connect('localhost', 'root', '', 'sportify');
+if (!$conn) {
+    die("Erreur de connexion à la base de données");
+}
+
+$message = null;
+
+// Traitement de l'annulation
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['id_rdv'], $_POST['id_coach'], $_POST['date_rdv'], $_POST['heure_rdv'])
+) {
+    $id_client = $_SESSION['id'];
+    $id_rdv    = $_POST['id_rdv'];
+    $id_coach  = $_POST['id_coach'];
+    $date_rdv  = $_POST['date_rdv'];
+    $heure_rdv = $_POST['heure_rdv'];
+
+    // Déterminer le jour de la semaine
+    $dt = DateTime::createFromFormat('Y-m-d', $date_rdv);
+    $joursFr = [1 => 'Lundi', 2 => 'Mardi', 3 => 'Mercredi', 4 => 'Jeudi', 5 => 'Vendredi', 6 => 'Samedi', 7 => 'Dimanche'];
+    $jour_semaine = $joursFr[(int)$dt->format('N')];
+
+    // Heure de fin
+    $dtHeure = DateTime::createFromFormat('H:i:s', $heure_rdv);
+    $dtHeure->modify('+1 hour');
+    $heure_fin = $dtHeure->format('H:i:s');
+
+    // Supprimer le rendez-vous
+    $stmt = mysqli_prepare($conn, "DELETE FROM rendezvous WHERE id = ? AND id_client = ?");
+    mysqli_stmt_bind_param($stmt, 'ii', $id_rdv, $id_client);
+    $ok1 = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    // Réinsertion dans disponibilités coach ou salle
+    if ($ok1) {
+        if ($id_coach !== '') {
+            $stmt = mysqli_prepare($conn, "INSERT INTO disponibilites (id_coach, jour_semaine, heure_debut, heure_fin, disponible) VALUES (?, ?, ?, ?, 1)");
+            mysqli_stmt_bind_param($stmt, 'isss', $id_coach, $jour_semaine, $heure_rdv, $heure_fin);
+        } else {
+            $salle_id = 1;
+            $stmt = mysqli_prepare($conn, "INSERT INTO disponibilites_salle (id_salle, jour_semaine, heure_debut, heure_fin, disponible) VALUES (?, ?, ?, ?, 1)");
+            mysqli_stmt_bind_param($stmt, 'isss', $salle_id, $jour_semaine, $heure_rdv, $heure_fin);
+        }
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        $message = ['type' => 'success', 'texte' => "Rendez-vous annulé pour $jour_semaine à " . substr($heure_rdv, 0, 5)];
+    } else {
+        $message = ['type' => 'danger', 'texte' => "Échec de l'annulation du rendez-vous."];
+    }
+}
+
+// Lecture des rendez-vous client
+$id_client = $_SESSION['id'];
+$query = "
+    SELECT r.id AS id_rdv, r.date_rdv, r.heure_rdv, r.statut, r.id_coach, u.nom AS coach_nom, u.prenom AS coach_prenom, c.specialite, c.photo FROM rendezvous r LEFT JOIN coachs c ON r.id_coach = c.id LEFT JOIN utilisateurs u ON c.id_utilisateur = u.id
+    WHERE r.id_client = ?
+    ORDER BY r.date_rdv, r.heure_rdv
+";
+
+$stmt = mysqli_prepare($conn, $query);
+mysqli_stmt_bind_param($stmt, 'i', $id_client);
+mysqli_stmt_execute($stmt);
+$res = mysqli_stmt_get_result($stmt);
+$rendezvous = mysqli_fetch_all($res, MYSQLI_ASSOC);
+mysqli_stmt_close($stmt);
+mysqli_close($conn);
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Vos Rendez-vous – Sportify</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../styleaccueil.css">
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header class="header">
+    <h1 class="header-title">
+      <span class="red">Sportify :</span>
+      <span class="blue">Vos Rendez-vous</span>
+    </h1>
+    <img src="../img/sportify_logo.png" alt="Logo Sportify" class="logo">
+  </header>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-md">
+    <div class="collapse navbar-collapse" id="main-navigation">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item"><a class="nav-link" href="client_home.php">Accueil</a></li>
+        <li class="nav-item"><a class="nav-link" href="toutparcourirclient/client_toutparcourir.html">Tout Parcourir</a></li>
+        <li class="nav-item"><a class="nav-link" href="client_recherche.php">Recherche</a></li>
+        <li class="nav-item"><a class="nav-link" href="client_payant.php">Options payantes</a></li>
+        <li class="nav-item"><a class="nav-link" href="client_rendezvous.php">Rendez-vous</a></li>
+        <li class="nav-item"><a class="nav-link" href="client_votrecompte.php">Votre Compte</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="section text-center mt-5">
+    <h2>Mes Rendez-vous Confirmés</h2>
+
+    <?php if ($message): ?>
+      <div class="alert alert-<?= $message['type'] ?> w-75 mx-auto mt-3">
+        <?= $message['texte'] ?>
+      </div>
+    <?php endif; ?>
+
+    <?php if (count($rendezvous) > 0): ?>
+      <!-- ... (code précédent inchangé) -->
+
+<table class="table table-striped w-75 mx-auto mt-4">
+  <thead class="bg-primary text-white">
+    <tr>
+      <th>Date</th>
+      <th>Heure</th>
+      <th>Coach / Salle</th>
+      <th>Spécialité</th>
+      <th>Photo</th>
+      <th>Statut</th>
+      <th>Annuler</th>
+      <th>Discuter</th> 
+    </tr>
+  </thead>
+  <tbody>
+    <?php foreach ($rendezvous as $rdv): ?>
+      <tr>
+        <td><?= htmlspecialchars($rdv['date_rdv']) ?></td>
+        <td><?= htmlspecialchars(substr($rdv['heure_rdv'], 0, 5)) ?></td>
+
+        <?php if ($rdv['id_coach']): ?>
+          <td><?= htmlspecialchars($rdv['coach_prenom'] . ' ' . $rdv['coach_nom']) ?></td>
+          <td><?= htmlspecialchars($rdv['specialite']) ?></td>
+          <td>
+            <?php if (!empty($rdv['photo'])): ?>
+              <img src="../<?= htmlspecialchars($rdv['photo']) ?>" alt="Photo du coach" style="width:60px;">
+            <?php else: ?>
+              <span class="text-muted">N/A</span>
+            <?php endif; ?>
+          </td>
+        <?php else: ?>
+          <td><strong>Salle de sport</strong></td>
+          <td>-</td>
+          <td><span class="text-muted">N/A</span></td>
+        <?php endif; ?>
+
+        <td><?= ucfirst(htmlspecialchars($rdv['statut'])) ?></td>
+        <td>
+          <form method="POST" action="">
+            <input type="hidden" name="id_rdv"    value="<?= $rdv['id_rdv'] ?>">
+            <input type="hidden" name="id_coach"  value="<?= $rdv['id_coach'] ?>">
+            <input type="hidden" name="date_rdv"  value="<?= $rdv['date_rdv'] ?>">
+            <input type="hidden" name="heure_rdv" value="<?= $rdv['heure_rdv'] ?>">
+            <button type="submit" class="btn btn-danger btn-sm">Annuler</button>
+          </form>
+        </td>
+        <td>
+          <?php if ($rdv['id_coach']): ?>
+            <a href="client_chatroom.php?coach_id=<?= $rdv['id_coach'] ?>" class="btn btn-info btn-sm">Discuter</a>
+          <?php else: ?>
+            <span class="text-muted">N/A</span>
+          <?php endif; ?>
+        </td>
+      </tr>
+    <?php endforeach; ?>
+  </tbody>
+</table>
+
+    <?php else: ?>
+      <p class="mt-4 text-muted">Aucun rendez-vous réservé pour l'instant.</p>
+    <?php endif; ?>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer mt-5">
+    <div class="footer-content">
+      <div class="contact-info">
+        <h4>Contactez-nous</h4>
+        <p>
+          Sportify<br>
+          10 rue Sextius-Michel, 75015 Paris<br>
+          <a href="mailto:info@sportify.fr">info@sportify.fr</a><br>
+          +33 1 23 45 67 89
+        </p>
+      </div>
+      <div class="map">
+        <h4>Notre emplacement</h4>
+        <iframe 
+          src="https://www.google.com/maps?q=10+rue+Sextius-Michel+75015+Paris&output=embed" 
+          width="100%" height="200" frameborder="0" style="border:0;" allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
